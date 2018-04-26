@@ -18,6 +18,8 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String AUTHORITY = BuildConfig.APPLICATION_ID+".provider";
+    String imageFilePath;
     //public static final String EXTRA_MESSAGE = "example text";
 
     @Override
@@ -37,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
                 // Catch exception
             }
 
-            if(photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(this,"com.example.android.fileprovider",photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            if (photoFile != null) {
+                ImageView image = findViewById(R.id.imageView);
+
+                Uri photoURI = FileProvider.getUriForFile(this, AUTHORITY, photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
             }
         }
     }
@@ -48,10 +52,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ImageView imageVew = findViewById(R.id.imageView);
-            imageVew.setImageBitmap(imageBitmap);
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                ImageView imageView = findViewById(R.id.imageView);
+                imageView.setImageURI(Uri.parse(imageFilePath));
+            }
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            ImageView imageVew = findViewById(R.id.imageView);
+//            imageVew.setImageBitmap(imageBitmap);
         }
     }
 
@@ -66,11 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void searchButton(View view){
+        Intent intent = new Intent(this,DisplaySearchActivity.class);
+        startActivity(intent);
+    }
+
     private File createImageFile() throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String filename = "PhotoGalleryImage_" + timeStamp + "_";
         File storeDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        //System.out.println(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(filename,".jpg",storeDir);
+
+        imageFilePath = image.getAbsolutePath();
+        System.out.println(imageFilePath);
         return image;
     }
 
