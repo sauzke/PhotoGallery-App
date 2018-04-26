@@ -14,10 +14,13 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final int START_TO_SEARCH = 2;
+    public static final int START_TO_SETTING = 3;
     private static final String AUTHORITY = BuildConfig.APPLICATION_ID+".provider";
     String imageFilePath;
     //public static final String EXTRA_MESSAGE = "example text";
@@ -52,38 +55,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                ImageView imageView = findViewById(R.id.imageView);
-                imageView.setImageURI(Uri.parse(imageFilePath));
-            }
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            ImageView imageVew = findViewById(R.id.imageView);
-//            imageVew.setImageBitmap(imageBitmap);
+            ImageView imageView = findViewById(R.id.imageView);
+            imageView.setImageURI(Uri.parse(imageFilePath));
+        }
+        if(requestCode == START_TO_SEARCH && resultCode == RESULT_OK){
+            ArrayList<String> list = (ArrayList<String>) data.getSerializableExtra("file_list");
+            System.out.println(list.get(0));
         }
     }
 
     // When setting button is clicked
     public void settingButton(View view){
-        // Sends user to the setting activity
         Intent intent = new Intent(this, DisplaySettingActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.editText);
-//        String message = editText.getText().toString();
-//        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
-
     }
 
     public void searchButton(View view){
         Intent intent = new Intent(this,DisplaySearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent,START_TO_SEARCH);
     }
 
     private File createImageFile() throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String filename = "PhotoGalleryImage_" + timeStamp + "_";
         File storeDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //System.out.println(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(filename,".jpg",storeDir);
 
         imageFilePath = image.getAbsolutePath();
