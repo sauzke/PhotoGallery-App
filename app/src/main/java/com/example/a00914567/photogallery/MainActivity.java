@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int START_TO_SETTING = 3;
     private static final String AUTHORITY = BuildConfig.APPLICATION_ID+".provider";
     String imageFilePath;
-    //public static final String EXTRA_MESSAGE = "example text";
+    ArrayList<String> list = new ArrayList<String>();
+    int currentIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +58,22 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView imageView = findViewById(R.id.imageView);
             imageView.setImageURI(Uri.parse(imageFilePath));
+
+            list.add(imageFilePath);
+            currentIndex = list.size() - 1;
+
+            System.out.println("size: " + list.size() + ", index: " + currentIndex);
         }
         if(requestCode == START_TO_SEARCH && resultCode == RESULT_OK){
-            ArrayList<String> list = (ArrayList<String>) data.getSerializableExtra("file_list");
-            System.out.println(list.get(0));
+            list = (ArrayList<String>) data.getSerializableExtra("file_list");
+
+            if(!list.isEmpty()){
+                File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+                ImageView imageView = findViewById(R.id.imageView);
+                imageView.setImageURI(Uri.parse(dir.getAbsolutePath() + "/" + list.get(0)));
+                currentIndex = 0;
+            }
         }
     }
 
@@ -76,16 +89,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File createImageFile() throws IOException{
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String filename = "PhotoGalleryImage_" + timeStamp + "_";
-        File storeDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(filename,".jpg",storeDir);
+        File image = File.createTempFile(filename,".jpg",dir);
 
         imageFilePath = image.getAbsolutePath();
-        System.out.println(imageFilePath);
         return image;
     }
 
+    public void leftButton(View view){
+        if(currentIndex > 0 && !list.isEmpty()){
+            currentIndex--;
+            File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            ImageView imageView = findViewById(R.id.imageView);
+            imageView.setImageURI(Uri.parse(dir.getAbsolutePath() + "/" + list.get(currentIndex)));
+        }
+    }
 
-
+    public void rightButton(View view){
+        if(list.size() > currentIndex + 1){
+            currentIndex++;
+            File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            ImageView imageView = findViewById(R.id.imageView);
+            imageView.setImageURI(Uri.parse(dir.getAbsolutePath() + "/" + list.get(currentIndex)));
+        }
+    }
 }

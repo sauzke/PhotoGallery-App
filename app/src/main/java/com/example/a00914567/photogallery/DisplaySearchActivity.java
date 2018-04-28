@@ -48,17 +48,20 @@ public class DisplaySearchActivity extends AppCompatActivity {
     public ArrayList<String> getFiles(Date startDate, Date endDate) throws ParseException{
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         String[] list = dir.list();
-        ArrayList<String> result = null;
+        ArrayList<String> result = new ArrayList<String>();
 
         for(String filename : list){
             String[] parts = filename.split("_");
 
-            String dateString = parts[1].substring(0,3) + "/" + parts[1].substring(4,5) + "/" + parts[1].substring(6,7);
+            String dateString = parts[1].substring(0,4) + "/" + parts[1].substring(4,6) + "/" + parts[1].substring(6,8);
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
             Date pictureDate = dateFormat.parse(dateString);
 
+            //System.out.println(dateString);
+
             if(pictureDate.compareTo(startDate) >= 0 && pictureDate.compareTo(endDate) <= 0){
+                //System.out.println(filename);
                 result.add(filename);
             }
         }
