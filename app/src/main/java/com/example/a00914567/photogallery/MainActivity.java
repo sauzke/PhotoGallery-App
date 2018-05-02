@@ -19,6 +19,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -102,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
             currentIndex = list.size() - 1;
 
             updatePictureDetails(pictureUri);
+
+            unHideCaptions();
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode != RESULT_OK) {
             System.out.println("photo not taken");
@@ -117,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageURI(Uri.parse(pictureUri));
                 updatePictureDetails(pictureUri);
                 currentIndex = 0;
+
+                unHideCaptions();
             }
         }
     }
@@ -190,6 +195,13 @@ public class MainActivity extends AppCompatActivity {
 
         }catch(IOException e){
             e.printStackTrace();
+        }
+    }
+
+    public void unHideCaptions(){
+        EditText captions = findViewById(R.id.captionEditText);
+        if(!captions.isShown()){
+            captions.setVisibility(View.VISIBLE);
         }
     }
 }
