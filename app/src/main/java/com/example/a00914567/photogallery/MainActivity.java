@@ -90,11 +90,8 @@ public class MainActivity extends AppCompatActivity {
                             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, GPS.convert(location.getLatitude()));
                             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, GPS.latitudeRef(location.getLatitude()));
                             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, GPS.longitudeRef(location.getLongitude()));
-
                             String timeStamp = new SimpleDateFormat("yyyy/MM/dd h:mm a").format(new Date());
-
                             exif.setAttribute(ExifInterface.TAG_DATETIME, timeStamp);
-
                             exif.saveAttributes();
                         }catch(Exception e){
                         }
@@ -157,9 +154,22 @@ public class MainActivity extends AppCompatActivity {
     // When left button is clicked
     public void leftButton(View view){
         if(currentIndex > 0 && !list.isEmpty()){
-            currentIndex--;
             File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             ImageView imageView = findViewById(R.id.imageView);
+            EditText captions = findViewById(R.id.captionEditText);
+
+            if(captions.getText().toString() != ""){
+                try{
+                    ExifInterface imageExif = new ExifInterface(dir.getAbsolutePath() + "/" + list.get(currentIndex));
+                    imageExif.setAttribute(ExifInterface.TAG_USER_COMMENT,captions.getText().toString());
+                    imageExif.saveAttributes();
+                }catch(IOException e){
+
+                }
+            }
+
+            currentIndex--;
+
             String pictureUri = dir.getAbsolutePath() + "/" + list.get(currentIndex);
             imageView.setImageURI(Uri.parse(pictureUri));
             updatePictureDetails(pictureUri);
@@ -172,6 +182,18 @@ public class MainActivity extends AppCompatActivity {
             currentIndex++;
             File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             ImageView imageView = findViewById(R.id.imageView);
+            EditText captions = findViewById(R.id.captionEditText);
+
+            if(captions.getText().toString() != ""){
+                try{
+                    ExifInterface imageExif = new ExifInterface(dir.getAbsolutePath() + "/" + list.get(currentIndex));
+                    imageExif.setAttribute(ExifInterface.TAG_USER_COMMENT, captions.getText().toString());
+                    imageExif.saveAttributes();
+                }catch(IOException e){
+
+                }
+            }
+
             String pictureUri = dir.getAbsolutePath() + "/" + list.get(currentIndex);
             imageView.setImageURI(Uri.parse(pictureUri));
             updatePictureDetails(pictureUri);
@@ -195,7 +217,18 @@ public class MainActivity extends AppCompatActivity {
                 List<Address> list = geocoder.getFromLocation(lat, lon, 1);
                 address = list.get(0);
 
-                detail.setText(address.getAddressLine(0) + "\n" + imageExif.getAttribute(ExifInterface.TAG_DATETIME));
+                String displayText = address.getAddressLine(0) + "\n" + imageExif.getAttribute(ExifInterface.TAG_DATETIME);
+                EditText captions = findViewById(R.id.captionEditText);
+                if(imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT) != null){
+                    //displayText += "\nCaptions: " + imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT);
+
+                    captions.setText(imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT));
+                    System.out.println("got: " + imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT));
+                }else{
+                    captions.setText("");
+                }
+
+                detail.setText(displayText);
             }
 
         }catch(IOException e){
