@@ -31,12 +31,6 @@ public class ApplicationEspressoTest {
 
     @Test
     public void ensureSearchWorks(){
-        // Type text and then press the button.
-//        onView(withId(R.id.editText)).perform(typeText("HELLO"), closeSoftKeyboard());
-//        onView(withId(R.id.settingButton)).perform(click());
-        // Check that the text was changed.
-        //onView(withId(R.id.text_simple)).check(matches(withText("HELLO")));
-        //onView(withContentDescription("Navigate up")).perform(click());
         onView(withId(R.id.searchButton)).perform(click());
         onView(withId(R.id.startDateView)).perform(typeText("2018/01/01"),closeSoftKeyboard());
         onView(withId(R.id.endDateView)).perform(typeText("2018/12/12"),closeSoftKeyboard());

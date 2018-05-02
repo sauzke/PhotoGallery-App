@@ -58,10 +58,7 @@ public class DisplaySearchActivity extends AppCompatActivity {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
             Date pictureDate = dateFormat.parse(dateString);
 
-            //System.out.println(dateString);
-
             if(pictureDate.compareTo(startDate) >= 0 && pictureDate.compareTo(endDate) <= 0){
-                //System.out.println(filename);
                 result.add(filename);
             }
         }
