@@ -90,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
                             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, GPS.convert(location.getLatitude()));
                             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, GPS.latitudeRef(location.getLatitude()));
                             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, GPS.longitudeRef(location.getLongitude()));
+
+                            String timeStamp = new SimpleDateFormat("yyyy/MM/dd h:mm a").format(new Date());
+
+                            exif.setAttribute(ExifInterface.TAG_DATETIME, timeStamp);
+
                             exif.saveAttributes();
                         }catch(Exception e){
                         }
@@ -190,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 List<Address> list = geocoder.getFromLocation(lat, lon, 1);
                 address = list.get(0);
 
-                detail.setText(address.getAddressLine(0));
+                detail.setText(address.getAddressLine(0) + "\n" + imageExif.getAttribute(ExifInterface.TAG_DATETIME));
             }
 
         }catch(IOException e){
