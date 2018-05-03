@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 public class DisplaySearchActivity extends AppCompatActivity {
 
@@ -22,26 +23,54 @@ public class DisplaySearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_search);
     }
 
-    public void getDates(View view){
+    public void getResults(View view){
         Date startDate = null;
         Date endDate = null;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        EditText startDateEditText = findViewById(R.id.startDateView);
+        EditText endDateEditText = findViewById(R.id.endDateView);
+        EditText keywordEditText = findViewById(R.id.keywordEditText);
 
-        try{
-            EditText startDateEditText = findViewById(R.id.startDateView);
-            EditText endDateEditText = findViewById(R.id.endDateView);
-            startDate = dateFormat.parse(startDateEditText.getText().toString());
-            endDate = dateFormat.parse(endDateEditText.getText().toString());
+        if((!startDateEditText.getText().toString().trim().matches("") && !endDateEditText.getText().toString().trim().matches("")) || !keywordEditText.getText().toString().trim().matches("")) {
+            try {
+                if(!keywordEditText.getText().toString().trim().matches("")){
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+                    File commentData = new File(dir.getAbsolutePath() + "/PhotoGallery.dat");
 
-            ArrayList<String> files = getFiles(startDate,endDate);
+                    if(commentData.exists()) {
+                        Scanner scanner = new Scanner(commentData);
+                        ArrayList<String> files = new ArrayList<String>();
 
-            Intent data = new Intent();
-            data.putExtra("file_list",files);
-            setResult(RESULT_OK, data);
-            finish();
+                        while (scanner.hasNextLine()) {
+                            String temp = scanner.nextLine();
+                            String[] parts = temp.split(";");
 
-        }catch(Exception e){
+                            if (parts[1].matches(keywordEditText.getText().toString().trim())) {
+                                files.add(parts[0]);
+                            }
+                        }
 
+                        Intent data = new Intent();
+                        data.putExtra("file_list", files);
+                        setResult(RESULT_OK, data);
+                        finish();
+                    }
+                }
+                else {
+                    startDate = dateFormat.parse(startDateEditText.getText().toString());
+                    endDate = dateFormat.parse(endDateEditText.getText().toString());
+
+                    ArrayList<String> files = getFiles(startDate, endDate);
+
+                    Intent data = new Intent();
+                    data.putExtra("file_list", files);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+
+            } catch (Exception e) {
+
+            }
         }
     }
 

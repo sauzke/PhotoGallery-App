@@ -266,9 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String absFilePath = picDir + "/" + parts[0];
 
-                System.out.println("in: " + fileName + " comp: " + absFilePath);
                 if (absFilePath.trim().matches(fileName.trim())) {
-                    System.out.println("wtf");
                     comment = parts[1];
                     break;
                 }
