@@ -23,15 +23,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -158,11 +162,9 @@ public class MainActivity extends AppCompatActivity {
             ImageView imageView = findViewById(R.id.imageView);
             EditText captions = findViewById(R.id.captionEditText);
 
-            if(captions.getText().toString() != ""){
+            if(!captions.getText().toString().trim().matches("")){
                 try{
-                    ExifInterface imageExif = new ExifInterface(dir.getAbsolutePath() + "/" + list.get(currentIndex));
-                    imageExif.setAttribute(ExifInterface.TAG_USER_COMMENT,captions.getText().toString());
-                    imageExif.saveAttributes();
+                    setComment(list.get(currentIndex),captions.getText().toString());
                 }catch(IOException e){
 
                 }
@@ -179,20 +181,20 @@ public class MainActivity extends AppCompatActivity {
     // When right button is clicked
     public void rightButton(View view){
         if(list.size() > currentIndex + 1){
-            currentIndex++;
+
             File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             ImageView imageView = findViewById(R.id.imageView);
             EditText captions = findViewById(R.id.captionEditText);
 
-            if(captions.getText().toString() != ""){
+            if(!captions.getText().toString().trim().matches("")){
                 try{
-                    ExifInterface imageExif = new ExifInterface(dir.getAbsolutePath() + "/" + list.get(currentIndex));
-                    imageExif.setAttribute(ExifInterface.TAG_USER_COMMENT, captions.getText().toString());
-                    imageExif.saveAttributes();
+                    setComment(list.get(currentIndex),captions.getText().toString());
                 }catch(IOException e){
 
                 }
             }
+
+            currentIndex++;
 
             String pictureUri = dir.getAbsolutePath() + "/" + list.get(currentIndex);
             imageView.setImageURI(Uri.parse(pictureUri));
@@ -219,14 +221,8 @@ public class MainActivity extends AppCompatActivity {
 
                 String displayText = address.getAddressLine(0) + "\n" + imageExif.getAttribute(ExifInterface.TAG_DATETIME);
                 EditText captions = findViewById(R.id.captionEditText);
-                if(imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT) != null){
-                    //displayText += "\nCaptions: " + imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT);
 
-                    captions.setText(imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT));
-                    System.out.println("got: " + imageExif.getAttribute(ExifInterface.TAG_USER_COMMENT));
-                }else{
-                    captions.setText("");
-                }
+                captions.setText(getComment(imageUrl));
 
                 detail.setText(displayText);
             }
@@ -241,5 +237,44 @@ public class MainActivity extends AppCompatActivity {
         if(!captions.isShown()){
             captions.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setComment(String fileName, String comment) throws IOException{
+        File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File commentData = new File(dir.getAbsolutePath() + "/PhotoGallery.dat");
+
+        if(!commentData.exists()){
+            commentData.createNewFile();
+        }
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(commentData, true)));
+        out.println(fileName + ";" + comment);
+        out.close();
+    }
+
+    public String getComment(String fileName) throws IOException{
+        File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File commentData = new File(dir.getAbsolutePath() + "/PhotoGallery.dat");
+        String comment = "";
+        File picDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if(commentData.exists()) {
+            Scanner scanner = new Scanner(commentData);
+            while (scanner.hasNextLine()) {
+                String temp = scanner.nextLine();
+                String[] parts = temp.split(";");
+
+                String absFilePath = picDir + "/" + parts[0];
+
+                System.out.println("in: " + fileName + " comp: " + absFilePath);
+                if (absFilePath.trim().matches(fileName.trim())) {
+                    System.out.println("wtf");
+                    comment = parts[1];
+                    break;
+                }
+            }
+        }
+
+        return comment;
     }
 }
