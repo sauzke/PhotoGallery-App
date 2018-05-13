@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import static com.example.a00914567.photogallery.PhotoMange.FileManager.*;
+
 public class DisplaySearchActivity extends AppCompatActivity {
 
     @Override
@@ -35,32 +37,22 @@ public class DisplaySearchActivity extends AppCompatActivity {
             try {
                 if(!keywordEditText.getText().toString().trim().matches("")){
                     File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-                    File commentData = new File(dir.getAbsolutePath() + "/PhotoGallery.dat");
 
-                    if(commentData.exists()) {
-                        Scanner scanner = new Scanner(commentData);
-                        ArrayList<String> files = new ArrayList<String>();
+                    String keyword = keywordEditText.getText().toString().trim();
 
-                        while (scanner.hasNextLine()) {
-                            String temp = scanner.nextLine();
-                            String[] parts = temp.split(";");
+                    ArrayList<String> files = getPictureByKeyword(dir, keyword);
 
-                            if (parts[1].matches(keywordEditText.getText().toString().trim())) {
-                                files.add(parts[0]);
-                            }
-                        }
-
-                        Intent data = new Intent();
-                        data.putExtra("file_list", files);
-                        setResult(RESULT_OK, data);
-                        finish();
-                    }
+                    Intent data = new Intent();
+                    data.putExtra("file_list", files);
+                    setResult(RESULT_OK, data);
+                    finish();
                 }
                 else {
                     startDate = dateFormat.parse(startDateEditText.getText().toString());
                     endDate = dateFormat.parse(endDateEditText.getText().toString());
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
-                    ArrayList<String> files = getFiles(startDate, endDate);
+                    ArrayList<String> files = getPictureByDate(dir, startDate, endDate);
 
                     Intent data = new Intent();
                     data.putExtra("file_list", files);
@@ -74,24 +66,4 @@ public class DisplaySearchActivity extends AppCompatActivity {
         }
     }
 
-    public ArrayList<String> getFiles(Date startDate, Date endDate) throws ParseException{
-        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        String[] list = dir.list();
-        ArrayList<String> result = new ArrayList<String>();
-
-        for(String filename : list){
-            String[] parts = filename.split("_");
-
-            String dateString = parts[1].substring(0,4) + "/" + parts[1].substring(4,6) + "/" + parts[1].substring(6,8);
-
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            Date pictureDate = dateFormat.parse(dateString);
-
-            if(pictureDate.compareTo(startDate) >= 0 && pictureDate.compareTo(endDate) <= 0){
-                result.add(filename);
-            }
-        }
-
-        return result;
-    }
 }
