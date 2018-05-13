@@ -13,6 +13,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
+
+import static com.example.a00914567.photogallery.PhotoMange.FileManager.*;
 
 public class DisplaySearchActivity extends AppCompatActivity {
 
@@ -22,47 +25,45 @@ public class DisplaySearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_search);
     }
 
-    public void getDates(View view){
+    public void getResults(View view){
         Date startDate = null;
         Date endDate = null;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        EditText startDateEditText = findViewById(R.id.startDateView);
+        EditText endDateEditText = findViewById(R.id.endDateView);
+        EditText keywordEditText = findViewById(R.id.keywordEditText);
 
-        try{
-            EditText startDateEditText = findViewById(R.id.startDateView);
-            EditText endDateEditText = findViewById(R.id.endDateView);
-            startDate = dateFormat.parse(startDateEditText.getText().toString());
-            endDate = dateFormat.parse(endDateEditText.getText().toString());
+        if((!startDateEditText.getText().toString().trim().matches("") && !endDateEditText.getText().toString().trim().matches("")) || !keywordEditText.getText().toString().trim().matches("")) {
+            try {
+                if(!keywordEditText.getText().toString().trim().matches("")){
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
 
-            ArrayList<String> files = getFiles(startDate,endDate);
+                    String keyword = keywordEditText.getText().toString().trim();
 
-            Intent data = new Intent();
-            data.putExtra("file_list",files);
-            setResult(RESULT_OK, data);
-            finish();
+                    ArrayList<String> files = getPictureByKeyword(dir, keyword);
 
-        }catch(Exception e){
+                    Intent data = new Intent();
+                    data.putExtra("file_list", files);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+                else {
+                    startDate = dateFormat.parse(startDateEditText.getText().toString());
+                    endDate = dateFormat.parse(endDateEditText.getText().toString());
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
-        }
-    }
+                    ArrayList<String> files = getPictureByDate(dir, startDate, endDate);
 
-    public ArrayList<String> getFiles(Date startDate, Date endDate) throws ParseException{
-        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        String[] list = dir.list();
-        ArrayList<String> result = new ArrayList<String>();
+                    Intent data = new Intent();
+                    data.putExtra("file_list", files);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
 
-        for(String filename : list){
-            String[] parts = filename.split("_");
+            } catch (Exception e) {
 
-            String dateString = parts[1].substring(0,4) + "/" + parts[1].substring(4,6) + "/" + parts[1].substring(6,8);
-
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            Date pictureDate = dateFormat.parse(dateString);
-
-            if(pictureDate.compareTo(startDate) >= 0 && pictureDate.compareTo(endDate) <= 0){
-                result.add(filename);
             }
         }
-
-        return result;
     }
+
 }
