@@ -6,6 +6,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.style.TtsSpan;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,23 +28,33 @@ import static com.example.a00914567.photogallery.PhotoMange.PhotoDetailsManager.
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
-    @Test
-    public void testCaptionStorage() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        File dir = appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File fileDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+    Context appContext;
+    File picdir;
+    File fileDir;
+    DateFormat dateFormat;
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    @Before
+    public void initialize(){
+        appContext = InstrumentationRegistry.getTargetContext();
+        picdir = appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        fileDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    }
+
+    @Test
+    public void testKeywordSearch() {
         try {
-            ArrayList<String> list = getPictureByDate(dir, dateFormat.parse("2018/05/01"),dateFormat.parse("2018/05/30"));
+            ArrayList<String> list = getPictureByDate(picdir, dateFormat.parse("2018/05/01"),dateFormat.parse("2018/05/30"));
             assertEquals(false,list.get(0).isEmpty());
-            String filePath = dir.getAbsolutePath() + "/" + list.get(0);
+            String filePath = picdir.getAbsolutePath() + "/" + list.get(0);
 
             setComment(filePath,"Testing Comment",fileDir);
 
-            String comment = getComment(fileDir,dir,filePath);
+            String comment = getComment(fileDir,picdir,filePath);
             assertEquals("Testing Comment", comment);
+
+
+
         }catch(Exception e){
         }
     }
