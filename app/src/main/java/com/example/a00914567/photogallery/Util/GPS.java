@@ -1,4 +1,4 @@
-package com.example.a00914567.photogallery;
+package com.example.a00914567.photogallery.Util;
 
 /*
  * @author fabien
@@ -16,9 +16,9 @@ public class GPS {
     }
 
     /**
-     * returns ref for latitude which is S or N.
-     * @param latitude
-     * @return S or N
+     * returns ref for longitude which is W or E.
+     * @param longitude
+     * @return W or E
      */
     public static String longitudeRef(double longitude) {
         return longitude<0.0d?"W":"E";

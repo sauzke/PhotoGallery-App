@@ -56,11 +56,11 @@ public class FileManager implements PhotoManageImp {
         return result;
     }
 
-    public static File createImageFile(File dir) throws IOException {
+    public static File createImageFile(File picDir) throws IOException {
         //File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String filename = "PhotoGalleryImage_" + timeStamp + "_";
-        File image = File.createTempFile(filename,".jpg",dir);
+        File image = File.createTempFile(filename,".jpg",picDir);
 
         //imageFilePath = image.getName();
         return image;

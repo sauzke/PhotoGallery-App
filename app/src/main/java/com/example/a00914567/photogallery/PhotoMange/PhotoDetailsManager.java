@@ -7,13 +7,11 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.ExifInterface;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.a00914567.photogallery.GPS;
-import com.example.a00914567.photogallery.R;
+import com.example.a00914567.photogallery.Util.GPS;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +21,6 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class PhotoDetailsManager implements PhotoManageImp {
