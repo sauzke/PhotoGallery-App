@@ -52,9 +52,7 @@ public class ExampleInstrumentedTest {
 
             String comment = getComment(fileDir,picdir,filePath);
             assertEquals("Testing Comment", comment);
-
-
-
+            
         }catch(Exception e){
         }
     }
